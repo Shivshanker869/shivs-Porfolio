@@ -49,6 +49,7 @@ const HeroSection = () => {
                 variant="outline" 
                 size="lg"
                 className="border-primary/30 hover:bg-primary/10 transition-all duration-300"
+                onClick={() => window.open('https://drive.google.com/file/d/1czvBbIM6dDSru76bNPhlK7-xD_gyruhU/view?usp=sharing', '_blank')}
               >
                 <Download className="mr-2 h-4 w-4" />
                 Download Resume
