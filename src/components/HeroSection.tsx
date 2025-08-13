@@ -27,7 +27,7 @@ const HeroSection = () => {
                 <span className="gradient-text">Gupta</span>
               </h1>
               <div className="inline-block px-4 py-2 border border-primary/30 rounded-full">
-                <span className="text-primary font-semibold text-sm">PASSIONATE QA ENGINEER</span>
+                <span className="text-primary font-semibold text-sm">QA ENGINEER</span>
               </div>
             </div>
 
