@@ -66,7 +66,7 @@ const ContactSection = () => {
     {
       icon: <Github className="h-5 w-5" />,
       label: 'GitHub',
-      href: 'https://github.com/shivshanker',
+      href: 'https://github.com/Shivshanker869',
       color: 'text-gray-400',
     },
   ];
