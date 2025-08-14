@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import emailjs from '@emailjs/browser';
 import { 
   Mail, 
   Phone, 
@@ -10,23 +13,38 @@ import {
   Linkedin, 
   Github, 
   Send,
-  MessageCircle 
+  MessageCircle,
+  Loader2 
 } from 'lucide-react';
 
 const ContactSection = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const { toast } = useToast();
+
+  // EmailJS configuration
+  const EMAILJS_SERVICE_ID = 'service_443c0y8';
+  const EMAILJS_TEMPLATE_ID = 'template_10ov41d';
+  const EMAILJS_PUBLIC_KEY = 'd2UqayHW-l7bpBgRG';
+
   const contactInfo = [
     {
       icon: <Mail className="h-5 w-5" />,
       label: 'Email',
-      value: 'shiv.shanker.qa@gmail.com',
-      href: 'mailto:shiv.shanker.qa@gmail.com',
+      value: 'gopalgupta9639@gmail.com',
+      href: 'mailto:gopalgupta9639@gmail.com',
       color: 'primary',
     },
     {
       icon: <Phone className="h-5 w-5" />,
       label: 'Phone',
-      value: '+91 9876543210',
-      href: 'tel:+919876543210',
+      value: '9125963958',
+      href: 'tel:+919125963958',
       color: 'accent-purple',
     },
     {
@@ -42,7 +60,7 @@ const ContactSection = () => {
     {
       icon: <Linkedin className="h-5 w-5" />,
       label: 'LinkedIn',
-      href: 'https://linkedin.com/in/shivshanker',
+      href: 'https://www.linkedin.com/in/shivshankergupta/',
       color: 'text-blue-500',
     },
     {
@@ -52,6 +70,65 @@ const ContactSection = () => {
       color: 'text-gray-400',
     },
   ];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.message) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject || 'New Contact Form Submission',
+          message: formData.message,
+          to_name: 'Shiv Shanker Gupta',
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for your message. I'll get back to you soon!",
+      });
+
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again or contact me directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section id="contact" className="py-20">
@@ -76,23 +153,29 @@ const ContactSection = () => {
                 <h3 className="text-2xl font-semibold">Send Message</h3>
               </div>
 
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name">Full Name *</Label>
                     <Input 
                       id="name" 
+                      value={formData.name}
+                      onChange={handleInputChange}
                       placeholder="Your full name" 
                       className="mt-1 bg-background/50"
+                      required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email">Email Address *</Label>
                     <Input 
                       id="email" 
                       type="email" 
+                      value={formData.email}
+                      onChange={handleInputChange}
                       placeholder="your.email@example.com" 
                       className="mt-1 bg-background/50"
+                      required
                     />
                   </div>
                 </div>
@@ -101,28 +184,43 @@ const ContactSection = () => {
                   <Label htmlFor="subject">Subject</Label>
                   <Input 
                     id="subject" 
+                    value={formData.subject}
+                    onChange={handleInputChange}
                     placeholder="What's this about?" 
                     className="mt-1 bg-background/50"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message">Message *</Label>
                   <Textarea 
                     id="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
                     placeholder="Tell me about your project requirements..." 
                     rows={6}
                     className="mt-1 bg-background/50"
+                    required
                   />
                 </div>
 
                 <Button 
                   type="submit" 
+                  disabled={isSubmitting}
                   className="w-full bg-gradient-primary hover:opacity-90 transition-all duration-300"
                   size="lg"
                 >
-                  <Send className="mr-2 h-4 w-4" />
-                  Send Message
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" />
+                      Send Message
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
