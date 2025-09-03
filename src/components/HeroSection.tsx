@@ -66,7 +66,7 @@ const HeroSection = () => {
               {/* Profile image container */}
               <div className="relative w-80 h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-4 border-primary/30 shadow-card">
                 <img
-                  src="https://i.postimg.cc/Pq9BY2q8/Snapchat-1246447595.jpg"
+                  src="https://i.postimg.cc/g2hG2wBS/cropped-circle-image-1.png"
                   alt="Shiv Shanker Gupta - QA Engineer"
                   className="w-full h-full object-cover"
                 />
